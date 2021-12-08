@@ -4,6 +4,7 @@ from flask import Flask, app, request
 from flask.templating import render_template
 from models import *
 from models import Userdata
+import hashlib
 
 # app = Flask(__name__)
 
@@ -25,8 +26,12 @@ def loginsucess():
     if request.method == "POST":
         uname = request.form.get('uname')
         password = request.form.get('psw')
-        print(uname)
-        print(password)
+        # print(uname)
+        # print(password)
+        hashedPassword = hashlib.md5(bytes(str(password),encoding='utf-8'))
+        hashedPassword = hashedPassword.hexdigest()
+        result = db.session.query(Userdata).filter(Userdata.uname==uname, Userdata.password==hashedPassword)
+
         return render_template('welcome.html',data = uname)
 
 
@@ -37,12 +42,21 @@ def registration():
         uname = request.form.get('uname')
         email = request.form.get('mail')
         password = request.form.get('psw')
-        print(uname)
-        print(email)
-        print(password)
+        # print(uname)
+        # print(email)
+        # print(password)
+        hashedPassword = hashlib.md5(bytes(str(password),encoding='utf-8'))
+        hashedPassword = hashedPassword.hexdigest()
+        entry = Userdata(uname = uname,email = email,password = hashedPassword)
+        db.session.add(entry)
+        db.session.commit()
         return render_template('login.html')
 
 
 
 if __name__ == "__main__":
     app.run(debug=True, port=3002)
+
+
+
+# ALTER TABLE users ADD COLUMN id SERIAL PRIMARY KEY 
