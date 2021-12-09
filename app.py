@@ -6,7 +6,12 @@ from models import *
 from models import Userdata
 import hashlib
 
+
 # app = Flask(__name__)
+
+@app.route('/test')
+def test():
+    return render_template('index.html')
 
 @app.route('/')
 def home():
@@ -20,6 +25,7 @@ def login():
 def register():
     return render_template('register.html')
 
+
 @app.route('/welcome', methods=["POST"])
 def loginsucess():
 
@@ -31,7 +37,6 @@ def loginsucess():
         hashedPassword = hashlib.md5(bytes(str(password),encoding='utf-8'))
         hashedPassword = hashedPassword.hexdigest()
         result = db.session.query(Userdata).filter(Userdata.uname==uname, Userdata.password==hashedPassword)
-
         return render_template('welcome.html',data = uname)
 
 
@@ -55,7 +60,7 @@ def registration():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=3002)
+    app.run(debug=True, port=4002)
 
 
 
