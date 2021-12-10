@@ -12,6 +12,6 @@ class Userdata(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(250), unique = False, nullable=False)
 
-
+#  {% comment %} <button><a href="room">Search It :) <a></button> {% endcomment %}
 
     

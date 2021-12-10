@@ -37,11 +37,18 @@ def loginsucess():
         # print(password)
         global g_name
         g_name = uname
-        print(g_name)
+        # print(g_name)
         hashedPassword = hashlib.md5(bytes(str(password),encoding='utf-8'))
         hashedPassword = hashedPassword.hexdigest()
         result = db.session.query(Userdata).filter(Userdata.uname==uname, Userdata.password==hashedPassword)
-        return render_template('welcome.html',data = uname)
+        for row in result:
+            if len(row.uname)!= 0:          # we got that email and password matching in our db
+                return render_template('welcome.html',data = uname)
+
+        data = "Wrong credentials"
+        return render_template('login.html', data = data)
+        
+
 
 
 @app.route('/registrationsuccess', methods=["POST"])
@@ -63,18 +70,42 @@ def registration():
 
 @app.route('/personal')
 def searchpersonal():
+
     global g_name
     return render_template('personal.html',data = g_name)
 
 
 @app.route('/group')
 def searchall():
+    dataset = Userdata.query.with_entities(Userdata.uname)
+    answer =[]
+    for data in dataset :
+         answer.append(data.uname)
+    print(answer)
     global g_name
-    return render_template('group.html',data = g_name)
+    return render_template('group.html',ans = answer)
+    
+    
+@app.route('/room',methods =['GET','POST'])
+def enterchat():
+        
+        user_name = request.form.get("search")
+        result = db.session.query(Userdata).filter(Userdata.uname == user_name)
+        print(result)
+        for row in result:
+            if(row.uname!=0):
+                return render_template('chatroom.html')
+    
+        data = "No User Found Sorry :("
+        return render_template('personal.html',invalid = data)
+    
+
+
+
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=4001)
+    app.run(debug=True, port=4005)
     
 
 
