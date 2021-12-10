@@ -5,10 +5,11 @@ from flask.templating import render_template
 from models import *
 from models import Userdata
 import hashlib
+g_name = ""
 
 
 # app = Flask(__name__)
-
+# 
 @app.route('/test')
 def test():
     return render_template('index.html')
@@ -34,6 +35,9 @@ def loginsucess():
         password = request.form.get('psw')
         # print(uname)
         # print(password)
+        global g_name
+        g_name = uname
+        print(g_name)
         hashedPassword = hashlib.md5(bytes(str(password),encoding='utf-8'))
         hashedPassword = hashedPassword.hexdigest()
         result = db.session.query(Userdata).filter(Userdata.uname==uname, Userdata.password==hashedPassword)
@@ -57,10 +61,21 @@ def registration():
         db.session.commit()
         return render_template('login.html')
 
+@app.route('/personal')
+def searchpersonal():
+    global g_name
+    return render_template('personal.html',data = g_name)
+
+
+@app.route('/group')
+def searchall():
+    global g_name
+    return render_template('group.html',data = g_name)
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=4002)
+    app.run(debug=True, port=4001)
+    
 
 
 
