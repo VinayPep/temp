@@ -45,7 +45,7 @@ def loginsucess():
         hashedPassword = hashedPassword.hexdigest()
         result = db.session.query(Userdata).filter(Userdata.uname==uname, Userdata.password==hashedPassword)
         for row in result:
-            if len(row.uname)!= 0:          # we got that email and password matching in our db
+            if len(row.uname)!= 0:          
                 return render_template('welcome.html',data = uname)
 
         data = "Wrong credentials"
