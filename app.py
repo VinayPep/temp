@@ -5,7 +5,10 @@ from flask.templating import render_template
 from models import *
 from models import Userdata
 import hashlib
+from flask_socketio import SocketIO, send
 g_name = ""
+socketio = SocketIO(app, cors_allowed_origins='*')
+
 
 
 # app = Flask(__name__)
@@ -81,7 +84,6 @@ def searchall():
     answer =[]
     for data in dataset :
          answer.append(data.uname)
-    print(answer)
     global g_name
     return render_template('group.html',ans = answer)
     
@@ -98,14 +100,17 @@ def enterchat():
     
         data = "No User Found Sorry :("
         return render_template('personal.html',invalid = data)
-    
 
 
 
-
+@socketio.on('message', namespace='/group')
+def handleMessage(msg):
+	send(msg, broadcast=True)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=4005)
+    socketio.run(app)
+  
+    # app.run(debug=True, port=4005)
     
 
 
