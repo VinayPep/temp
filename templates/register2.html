@@ -10,14 +10,13 @@
     </style>
   </head>
   <body>
-    <form action="/patientregistrationsuccess" method = "POST">
+    <form action="/doctorregistrationsuccess" method = "POST">
       <h1>Please Login to Meet New People out there :)</h1>
      
       <div class="formcontainer">
       <div class="container">
-       
 
-        <labe for="uname"><strong>Patient Name</strong></labe>
+        <label for="uname"><strong>Doctor  Name</strong></label>
         <input type="text" placeholder="Enter your Name" name="uname" requiredl>
 
         <label for="mail"><strong>E-mail</strong></label>
@@ -29,17 +28,45 @@
         <label for="add"><strong>Address </strong></label>
         <input type="text" placeholder="Enter Address" name="add" required>
 
-        <label for="age"><strong>Age</strong></label>
-        <input type="text" placeholder="Enter Age" name="age" required>
+        <label for="yoe"><strong>Year of Experience </strong></label>
+        <input type="text" placeholder="Enter Year of Experience" name="yoe" required>
 
-        <label for="gen"><strong>Gender</strong></label>
-        <input type="text" placeholder="Enter Gender" name="gen" required>
+        <label for="spl"><strong>Speciality</strong></label>
+        <input type="text" placeholder="Enter Speciality" name="spl" required>
 
         <label for="phn"><strong>Phone</strong></label>
         <input type="text" placeholder="Enter Phone" name="phn" required>
+
+        <label for="fee"><strong>Fee</strong></label>
+        <input type="text" placeholder="Enter Fees" name="fee" required>
+
+        <label for="desc"><strong>Description</strong></label>
+        <input type="text" placeholder="Enter Description" name="desc" required>
+
+        <label for="avf"><strong>Availabity From (TIME)</strong></label>
+        <input type="time" placeholder="Enter Availabity From " name="avf" required>
+        <br>
+        
+        <br>
+
+        <label for="avt"><strong>Availabity To (TIME) </strong></label>
+        <input type="time" placeholder="Enter Availabity  To" name="avt" required>
+        <br>
+        <br>
+
+        <label for="avf"><strong>Availabity From (DAY)</strong></label>
+        <input type="text" placeholder="Enter Availabity From " name="avf" required>
+
+        <label for="avt"><strong>Availabity To (DAY) </strong></label>
+        <input type="text" placeholder="Enter Availabity  To" name="avt" required>
+
+
+
         
       </div>
       <button type="submit"><strong>SIGN UP</strong></button>
+
+
       <div class="container" style="background-color: #eee">
         <label style="padding-left: 15px">
         <input type="checkbox"  checked="checked" name="remember"> Remember me

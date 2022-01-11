@@ -1,35 +1,56 @@
+from ctypes import addressof
 from os import uname
 import re
 from flask import Flask, app, request
 from flask.templating import render_template
 from models import *
-from models import Userdata
+from models import userdata
 import hashlib
-from flask_socketio import SocketIO, send
-g_name = ""
-socketio = SocketIO(app, cors_allowed_origins='*')
 
+db.create_all()
+db.session.commit()
 
 
 # app = Flask(__name__)
-# 
+
+
+#Test Routes with /test Route  
 @app.route('/test')
 def test():
     return render_template('index.html')
 
+
+#Renders Home Page
 @app.route('/')
 def home():
     return render_template('home.html')
 
+
+#Renders SignIn Page
 @app.route('/signin')
 def login():
     return render_template('login.html')
 
-@app.route('/signup')
-def register():
+
+#Renders Doctor SignUp Page
+@app.route('/doctorsignup')
+def dregister():
+    return render_template('register2.html')
+
+#Renders Pharmacist SignUp Page
+@app.route('/pharmasignup')
+def phregister():
+    return render_template('register1.html')
+
+
+#Renders Pharmacist SignUp Page
+@app.route('/patientsignup')
+def pregister():
     return render_template('register.html')
 
 
+
+#Renders the Welcome Page
 @app.route('/welcome', methods=["POST"])
 def loginsucess():
 
@@ -47,74 +68,96 @@ def loginsucess():
         for row in result:
             if len(row.uname)!= 0:          
                 return render_template('welcome.html',data = uname)
-
         data = "Wrong credentials"
         return render_template('login.html', data = data)
         
 
 
-
-@app.route('/registrationsuccess', methods=["POST"])
+#Renders Login Page After Registration
+@app.route('/patientregistrationsuccess', methods=["POST"])
 def registration():
 
     if request.method == "POST":
-        uname = request.form.get('uname')
+        pname = request.form.get('uname')
         email = request.form.get('mail')
         password = request.form.get('psw')
+        address = request.form.get('add')
+        age = request.form.get('age')
+        gender = request.form.get('gen')
+        phone = request.form.get('phn')
         # print(uname)
         # print(email)
         # print(password)
         hashedPassword = hashlib.md5(bytes(str(password),encoding='utf-8'))
         hashedPassword = hashedPassword.hexdigest()
-        entry = Userdata(uname = uname,email = email,password = hashedPassword)
+        entry = userdata(role = 'Patient',email = email,password = hashedPassword)
+        
+        entry1 = patient(pname = pname, age = age,gender = gender,address = address,phone = phone)
         db.session.add(entry)
+        db.session.commit()
+        db.session.add(entry1)
         db.session.commit()
         return render_template('login.html')
 
-@app.route('/personal')
-def searchpersonal():
-
-    global g_name
-    return render_template('personal.html',data = g_name)
 
 
-@app.route('/group')
-def searchall():
-    dataset = Userdata.query.with_entities(Userdata.uname)
-    answer =[]
-    for data in dataset :
-         answer.append(data.uname)
-    global g_name
-    return render_template('group.html',ans = answer)
-    
-    
-@app.route('/room',methods =['GET','POST'])
-def enterchat():
+@app.route('/pharmaregistrationsuccess', methods=["POST"])
+def registration1():
+
+    if request.method == "POST":
+        pname = request.form.get('uname')
+        email = request.form.get('mail')
+        password = request.form.get('psw')
+        address = request.form.get('add')
+        phone = request.form.get('phn')
+        yoe = request.form.get('yoe')
+        regno = request.form.get('rn')
+        # print(uname)
+        # print(email)
+        # print(password)
+        hashedPassword = hashlib.md5(bytes(str(password),encoding='utf-8'))
+        hashedPassword = hashedPassword.hexdigest()
+        entry = userdata(role = 'Pharmacist',email = email,password = hashedPassword)
+        db.session.add(entry)
         
-        user_name = request.form.get("search")
-        result = db.session.query(Userdata).filter(Userdata.uname == user_name)
-        print(result)
-        for row in result:
-            if(row.uname!=0):
-                return render_template('chatroom.html')
-    
-        data = "No User Found Sorry :("
-        return render_template('personal.html',invalid = data)
+        entry1 = pharma(phname = pname,address = address,phone_no = phone,registration_no= regno,yoe = yoe)
+        db.session.add(entry1)
+        db.session.commit()
+        return render_template('login.html')
 
 
+@app.route('/doctorregistrationsuccess', methods=["POST"])
+def registration2():
 
-@socketio.on('message', namespace='/group')
-def handleMessage(msg):
-    # print(request.sid)
-	send(msg, broadcast=True)
-    
+    if request.method == "POST":
+        dname = request.form.get('uname')
+        email = request.form.get('mail')
+        password = request.form.get('psw')
+        address = request.form.get('add')
+        phone = request.form.get('phn')
+        speciality = request.form.get('spl')
+        fee = request.form.get('fee')
+        yoe = request.form.get('yoe')
+        desc = request.form.get('desc')
+        avf = request.form.get('avf')
+        avt = request.form.get('avt')
+
+        # print(uname)
+        # print(email)
+        # print(password)
+        hashedPassword = hashlib.md5(bytes(str(password),encoding='utf-8'))
+        hashedPassword = hashedPassword.hexdigest()
+        entry = userdata(role = 'Doctor',email = email,password = hashedPassword)
+        db.session.add(entry)
+        db.session.commit()
+        entry1 = doctor(dname = dname,address = address,phone = phone,description= desc,yoe = yoe,speciality = speciality,fee = fee,availability_from = avf , availability_to = avt)
+        db.session.add(entry1)
+        db.session.commit()
+        return render_template('login.html')
+
 
 if __name__ == "__main__":
-    socketio.run(app)
-  
-    # app.run(debug=True, port=4005)
+    app.run(debug=True, port=4005)
     
 
 
-
-# ALTER TABLE users ADD COLUMN id SERIAL PRIMARY KEY 
