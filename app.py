@@ -7,6 +7,12 @@ from models import *
 from models import userdata
 import hashlib
 
+
+from sqlalchemy import func 
+
+
+
+
 db.create_all()
 db.session.commit()
 
@@ -55,21 +61,26 @@ def pregister():
 def loginsucess():
 
     if request.method == "POST":
-        uname = request.form.get('uname')
+        email = request.form.get('email')
         password = request.form.get('psw')
         # print(uname)
         # print(password)
-        global g_name
-        g_name = uname
+        
         # print(g_name)
         hashedPassword = hashlib.md5(bytes(str(password),encoding='utf-8'))
         hashedPassword = hashedPassword.hexdigest()
-        result = db.session.query(Userdata).filter(Userdata.uname==uname, Userdata.password==hashedPassword)
+        result = db.session.query(userdata).filter(userdata.email==email, userdata.password==hashedPassword)
+        
+        # roles = result.role
+        # for row in result:
+        #     roles = row.role
+       
         for row in result:
-            if len(row.uname)!= 0:          
-                return render_template('welcome.html',data = uname)
+            if len(row.email)!= 0:
+                roles = row.role          
+                return render_template('welcome.html',data = roles )
         data = "Wrong credentials"
-        return render_template('login.html', data = data)
+        return render_template('login.html',data = data)
         
 
 
@@ -85,6 +96,7 @@ def registration():
         age = request.form.get('age')
         gender = request.form.get('gen')
         phone = request.form.get('phn')
+        (useriddata,)= db.session.query(func.max(userdata.userid)).first()
         # print(uname)
         # print(email)
         # print(password)
@@ -92,9 +104,9 @@ def registration():
         hashedPassword = hashedPassword.hexdigest()
         entry = userdata(role = 'Patient',email = email,password = hashedPassword)
         
-        entry1 = patient(pname = pname, age = age,gender = gender,address = address,phone = phone)
+        entry1 = patient(pname = pname, age = age,gender = gender,address = address,phone = phone,userid = useriddata)
         db.session.add(entry)
-        db.session.commit()
+        
         db.session.add(entry1)
         db.session.commit()
         return render_template('login.html')
@@ -119,8 +131,8 @@ def registration1():
         hashedPassword = hashedPassword.hexdigest()
         entry = userdata(role = 'Pharmacist',email = email,password = hashedPassword)
         db.session.add(entry)
-        
-        entry1 = pharma(phname = pname,address = address,phone_no = phone,registration_no= regno,yoe = yoe)
+        (useriddata,)= db.session.query(func.max(userdata.userid)).first()
+        entry1 = pharma(phname = pname,address = address,phone_no = phone,registration_no= regno,yoe = yoe,userid = useriddata )
         db.session.add(entry1)
         db.session.commit()
         return render_template('login.html')
@@ -141,6 +153,7 @@ def registration2():
         desc = request.form.get('desc')
         avf = request.form.get('avf')
         avt = request.form.get('avt')
+        (useriddata,)= db.session.query(func.max(userdata.userid)).first()
 
         # print(uname)
         # print(email)
@@ -149,8 +162,8 @@ def registration2():
         hashedPassword = hashedPassword.hexdigest()
         entry = userdata(role = 'Doctor',email = email,password = hashedPassword)
         db.session.add(entry)
-        db.session.commit()
-        entry1 = doctor(dname = dname,address = address,phone = phone,description= desc,yoe = yoe,speciality = speciality,fee = fee,availability_from = avf , availability_to = avt)
+        
+        entry1 = doctor(dname = dname,address = address,phone = phone,description= desc,yoe = yoe,speciality = speciality,fee = fee,availability_from = avf , availability_to = avt,userid = useriddata)
         db.session.add(entry1)
         db.session.commit()
         return render_template('login.html')
